@@ -2,6 +2,12 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.Random;
 
+enum SecurityLevel {LOW_LEVEL(0), MID_LEVEL(1), HIGH_LEVEL(2);
+
+    SecurityLevel(int i) {
+    }
+}
+
 public class Employee {
     private static int lastEmployeeID = 120111;
     private final int employeeId;
@@ -10,6 +16,7 @@ public class Employee {
     private final boolean remoteEmployee;
     private final int ageHired;
     private final LocalDate dateHired;
+    private SecurityLevel securityLevel;
 
     public Employee(String employeeName, String stateName, boolean remoteEmployee, int ageHired, LocalDate dateHired) {
         this.employeeId = lastEmployeeID++;
@@ -18,6 +25,18 @@ public class Employee {
         this.remoteEmployee = remoteEmployee;
         this.ageHired = ageHired;
         this.dateHired = dateHired;
+        this.setSecurityLevel();
+    }
+
+    private void setSecurityLevel() {
+        long yearsEmployed = Period.between(dateHired, LocalDate.now()).toTotalMonths() / 12;
+        if (yearsEmployed <= 1) {
+            securityLevel = SecurityLevel.LOW_LEVEL;
+        } else if (yearsEmployed <= 2) {
+            securityLevel = SecurityLevel.MID_LEVEL;
+        } else {
+            securityLevel = SecurityLevel.HIGH_LEVEL;
+        }
     }
 
     public int getEmployeeId() {
@@ -47,18 +66,16 @@ public class Employee {
 
     @Override
     public String toString() {
-        return "Name: %s - ID: %s - State: %s - Remote: %s".formatted(employeeName, employeeId, stateName, remoteEmployee);
+        return "Name: %25s - ID: %5s - State: %s - Remote: %s".formatted(employeeName, employeeId, stateName, remoteEmployee);
     }
 
     public static Employee getRandomEmployee() {
         Random random = new Random();
-        String randomFirstName = NewEmployeeData.FIRST_NAMES[random.nextInt(0, NewEmployeeData.FIRST_NAMES.length)];
-        String randomLastName = NewEmployeeData.LAST_NAMES[random.nextInt(0, NewEmployeeData.LAST_NAMES.length)];
         String randomState = NewEmployeeData.STATES[random.nextInt(0, NewEmployeeData.STATES.length)];
         int randomAge = random.nextInt(20, 70);
         LocalDate randomDate = LocalDate.of(random.nextInt(2008, 2024), random.nextInt(1, 13),
                 random.nextInt(1, 28));
-        return new Employee(randomFirstName + " " + randomLastName, randomState, random.nextBoolean()
+        return new Employee(NewEmployeeData.getRandomName(), randomState, random.nextBoolean()
         ,randomAge, randomDate);
     }
 }
