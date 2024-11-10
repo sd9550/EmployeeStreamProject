@@ -1,6 +1,6 @@
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.Random;
+import java.util.*;
 
 enum SecurityLevel {LOW_LEVEL(0), MID_LEVEL(1), HIGH_LEVEL(2);
 
@@ -17,6 +17,7 @@ public class Employee {
     private final int ageHired;
     private final LocalDate dateHired;
     private SecurityLevel securityLevel;
+    private List<WorkAssignment> workAssignments;
 
     public Employee(String employeeName, String stateName, boolean remoteEmployee, int ageHired, LocalDate dateHired) {
         this.employeeId = lastEmployeeID++;
@@ -26,17 +27,22 @@ public class Employee {
         this.ageHired = ageHired;
         this.dateHired = dateHired;
         this.setSecurityLevel();
+        this.workAssignments = new ArrayList<>();
     }
 
     private void setSecurityLevel() {
         long yearsEmployed = Period.between(dateHired, LocalDate.now()).toTotalMonths() / 12;
-        if (yearsEmployed <= 1) {
+        if (yearsEmployed <= 2) {
             securityLevel = SecurityLevel.LOW_LEVEL;
-        } else if (yearsEmployed <= 2) {
+        } else if (yearsEmployed <= 4) {
             securityLevel = SecurityLevel.MID_LEVEL;
         } else {
             securityLevel = SecurityLevel.HIGH_LEVEL;
         }
+    }
+
+    public SecurityLevel getSecurityLevel() {
+        return securityLevel;
     }
 
     public int getEmployeeId() {
@@ -64,9 +70,24 @@ public class Employee {
         return (int) (ageHired + timeElapsed);
     }
 
+    public List<WorkAssignment> getWorkAssignments() {
+        return List.copyOf(workAssignments);
+    }
+
+    public WorkAssignment getHighestPriority() {
+        workAssignments.sort(Comparator.comparing(WorkAssignment::getWorkPriority));
+        return workAssignments.get(workAssignments.size() - 1);
+    }
+
+    public void addWorkAssignments(WorkAssignment... wa) {
+        if (wa != null) {
+            workAssignments.addAll(Arrays.asList(wa));
+        }
+    }
+
     @Override
     public String toString() {
-        return "Name: %25s - ID: %5s - State: %s - Remote: %s".formatted(employeeName, employeeId, stateName, remoteEmployee);
+        return "Name: %25s - ID: %5s - State: %10s - Remote: %s - Security Level: %s".formatted(employeeName, employeeId, stateName, remoteEmployee, securityLevel);
     }
 
     public static Employee getRandomEmployee() {

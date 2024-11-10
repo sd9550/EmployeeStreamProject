@@ -31,18 +31,19 @@ public class EmployeeMain {
             System.out.printf("Count total for %s: %s\n", i == 0 ? " < 30" : " > 60", count);
         }
 
+        System.out.println("-".repeat(50));
         var californiaEmployees = Arrays.stream(employees).filter(e -> e.getStateName().equals("California"));
         californiaEmployees.forEach(System.out::println);
-
+        System.out.println("-".repeat(50));
         var lessThan40 = Arrays.stream(employees).filter(e -> e.getCurrentAge() < 40).sorted(Comparator.comparing(Employee::getCurrentAge));
         lessThan40.forEach(e -> System.out.println(e.getEmployeeName() + " - Current Age: " + e.getCurrentAge() + " - Hired Age: " + e.getAgeHired()));
+
+        String allStates = employeeList.stream().map(Employee::getStateName).distinct().sorted().reduce("", (k, v) -> k + " " + v);
+        System.out.println("\nAll States: " + allStates);
     }
 
     public static void compareBusinessesState(Map<Integer, Employee> first, Map<Integer, Employee> second, String state) {
         int total = 0;
-        List<Employee> firstList = new ArrayList<>(first.values());
-        List<Employee> secondList = new ArrayList<>(second.values());
-        List<Employee> mergedList;
         Map<Integer, Employee> mergedMap = new HashMap<>();
         mergedMap.putAll(first);
         mergedMap.putAll(second);
